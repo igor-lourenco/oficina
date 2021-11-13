@@ -1,14 +1,14 @@
 package com.oficina.services;
 
-import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import javax.persistence.EntityNotFoundException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,9 +26,9 @@ public class TelefoneService {
 	
 	
 	@Transactional(readOnly = true)
-	public List<TelefoneDTO> findAll() {
-		List<Telefone> entity = repository.findAll();
-		return entity.stream().map(x -> new TelefoneDTO(x)).collect(Collectors.toList()); 
+	public Page<TelefoneDTO> findAll(Pageable pageable) {
+		Page<Telefone> entity = repository.findAll(pageable);
+		return entity.map(x -> new TelefoneDTO(x)); 
 	}
 	
 	@Transactional(readOnly = true)

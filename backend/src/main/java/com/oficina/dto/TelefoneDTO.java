@@ -2,10 +2,12 @@ package com.oficina.dto;
 
 import java.io.Serializable;
 
+import org.springframework.hateoas.RepresentationModel;
+
 import com.oficina.entities.Telefone;
 import com.oficina.entities.enums.TipoEnum;
 
-public class TelefoneDTO implements Serializable {
+public class TelefoneDTO extends RepresentationModel<TelefoneDTO> implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	private Integer id;

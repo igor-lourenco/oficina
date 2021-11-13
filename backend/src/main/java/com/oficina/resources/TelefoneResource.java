@@ -1,9 +1,13 @@
 package com.oficina.resources;
 
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
+
 import java.net.URI;
-import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -26,14 +30,26 @@ public class TelefoneResource {
 	private TelefoneService service;
 
 	@GetMapping
-	public ResponseEntity<List<TelefoneDTO>> findAll() {
-		List<TelefoneDTO> dto = service.findAll();
+	public ResponseEntity<Page<TelefoneDTO>> findAll(Pageable pageable) {
+		Page<TelefoneDTO> dto = service.findAll(pageable);
+		
+		//HATEOAS
+		for(TelefoneDTO obj : dto) {
+			int objId = obj.getId();
+			obj.add(linkTo(methodOn(TelefoneResource.class).findById(objId)).withSelfRel());
+		}
+		
 		return ResponseEntity.ok().body(dto);
 	}
 
 	@GetMapping(value = "/{id}")
 	public ResponseEntity<TelefoneDTO> findById(@PathVariable Integer id) {
 		TelefoneDTO dto = service.findById(id);
+	
+		//HATEOAS
+		dto.add(linkTo(methodOn(TelefoneResource.class).findById(id)).withSelfRel());
+		dto.add(linkTo(methodOn(TelefoneResource.class).findAll(null)).withRel("findAll"));
+
 		return ResponseEntity.ok().body(dto);
 	}
 
@@ -41,6 +57,7 @@ public class TelefoneResource {
 	public ResponseEntity<TelefoneDTO> insert(@RequestBody TelefoneDTO dto) {
 		dto = service.insert(dto);
 		URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(dto.getId()).toUri();
+		dto.add(linkTo(methodOn(TelefoneResource.class).findById(dto.getId())).withSelfRel());
 		return ResponseEntity.created(uri).body(dto); // mostra no corpo da página a entidade criada
 	}
 	
