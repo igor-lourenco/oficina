@@ -32,4 +32,13 @@ public class TelefoneService {
 		Telefone obj = entity.orElseThrow(() -> new ResourceNotFoundException("Telefone não encontrado -> " + id));
 		return new TelefoneDTO(obj);
 	}
+	
+	@Transactional
+	public TelefoneDTO insert(TelefoneDTO dto) {
+		Telefone entity = new Telefone();
+		entity.setTipo(dto.getTipo());
+		entity.setNumero(dto.getNumero());
+		entity = repository.save(entity);
+		return new TelefoneDTO(entity);
+	}
 }
