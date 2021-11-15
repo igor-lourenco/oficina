@@ -56,14 +56,22 @@ public class TelefoneResource {
 	@PostMapping
 	public ResponseEntity<TelefoneDTO> insert(@RequestBody TelefoneDTO dto) {
 		dto = service.insert(dto);
-		URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(dto.getId()).toUri();
-		dto.add(linkTo(methodOn(TelefoneResource.class).findById(dto.getId())).withSelfRel());
-		return ResponseEntity.created(uri).body(dto); // mostra no corpo da página a entidade criada
+		URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")
+				.buildAndExpand(dto.getId()).toUri(); // mostra no corpo da página a entidade criada
+		
+		//HATEOAS
+		dto.add(linkTo(methodOn(TelefoneResource.class).findById(dto.getId())).withSelfRel()); 
+		dto.add(linkTo(methodOn(TelefoneResource.class).findAll(null)).withRel("findAll"));
+		return ResponseEntity.created(uri).body(dto); 
 	}
 	
 	@PutMapping(value = "/{id}")
 	public ResponseEntity<TelefoneDTO> update(@PathVariable Integer id, @RequestBody TelefoneDTO dto) {
 		dto = service.update(id, dto);
+		
+		//HATEOAS
+		dto.add(linkTo(methodOn(TelefoneResource.class).findById(dto.getId())).withSelfRel()); 
+		dto.add(linkTo(methodOn(TelefoneResource.class).findAll(null)).withRel("findAll"));
 		return ResponseEntity.ok().body(dto);
 	}
 	
