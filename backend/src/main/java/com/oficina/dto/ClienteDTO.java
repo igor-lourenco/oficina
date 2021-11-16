@@ -17,7 +17,7 @@ public class ClienteDTO extends RepresentationModel<ClienteDTO> implements Seria
 	private String nome;
 	private SexoEnum sexo;
 	
-	private List<TelefoneDTO> telefones = new ArrayList<>();
+	private List<FindByIdTelefoneDTO> telefones = new ArrayList<>();
 	
 	public ClienteDTO() {
 		
@@ -37,7 +37,7 @@ public class ClienteDTO extends RepresentationModel<ClienteDTO> implements Seria
 	
 	public ClienteDTO(Cliente obj, List<Telefone> telefones) {
 		this(obj);
-		telefones.forEach(tel -> this.telefones.add(new TelefoneDTO(tel)));
+		telefones.forEach(tel -> this.telefones.add(new FindByIdTelefoneDTO(tel)));
 		
 	}
 
@@ -65,11 +65,11 @@ public class ClienteDTO extends RepresentationModel<ClienteDTO> implements Seria
 		this.sexo = sexo;
 	}
 
-	public List<TelefoneDTO> getTelefones() {
+	public List<FindByIdTelefoneDTO> getTelefones() {
 		return telefones;
 	}
 
-	public void setTelefones(List<TelefoneDTO> telefones) {
+	public void setTelefones(List<FindByIdTelefoneDTO> telefones) {
 		this.telefones = telefones;
 	}
 }

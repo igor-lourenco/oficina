@@ -30,6 +30,18 @@ public class ResourceExceptionHandler {
 		return ResponseEntity.status(status).body(err);
 	}
 	
+	@ExceptionHandler(NullPointerException.class)
+	public ResponseEntity<StandardError> entityNotFound(NullPointerException e, HttpServletRequest request){
+		HttpStatus status = HttpStatus.BAD_REQUEST; // 400
+		StandardError err = new StandardError();
+		err.setTimestamp(LocalDateTime.now().format(formatter));
+		err.setStatus(status.value());
+		err.setError("Não permitido!");
+		err.setMessage(e.getMessage());
+		err.setPath(request.getRequestURI());
+		return ResponseEntity.status(status).body(err);
+	}
+	
 	@ExceptionHandler(DatabaseException.class)
 	public ResponseEntity<StandardError> database(DatabaseException e, HttpServletRequest request){
 		HttpStatus status = HttpStatus.BAD_REQUEST; //400

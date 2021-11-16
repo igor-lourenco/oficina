@@ -13,7 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.oficina.dto.ClienteDTO;
-import com.oficina.dto.TelefoneDTO;
+import com.oficina.dto.FindByIdTelefoneDTO;
 import com.oficina.entities.Cliente;
 import com.oficina.entities.Telefone;
 import com.oficina.repositories.ClienteRepository;
@@ -41,7 +41,7 @@ public class ClienteService {
 	public ClienteDTO findById(Integer id) {
 		Optional<Cliente> entity = repository.findById(id);
 		Cliente obj = entity.orElseThrow(() -> new ResourceNotFoundException("Cliente não encontrado -> " + id));
-		return new ClienteDTO(obj);
+		return new ClienteDTO(obj, obj.getTelefones());
 	}
 	
 	@Transactional
@@ -81,7 +81,7 @@ public class ClienteService {
 		entity.setSexo(dto.getSexo());
 		
 		entity.getTelefones().clear();
-		for(TelefoneDTO telDTO : dto.getTelefones()) {
+		for(FindByIdTelefoneDTO telDTO : dto.getTelefones()) {
 			Telefone tel = telRepository.getOne(telDTO.getId());
 			entity.getTelefones().add(tel);
 		}

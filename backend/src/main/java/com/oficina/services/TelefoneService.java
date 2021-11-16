@@ -24,54 +24,63 @@ public class TelefoneService {
 
 	@Autowired
 	private TelefoneRepository repository;
-	
+
 	@Autowired
 	private ClienteRepository cliRepository;
-	
-	
+
 	@Transactional(readOnly = true)
 	public Page<TelefoneDTO> findAll(Pageable pageable) {
 		Page<Telefone> entity = repository.findAll(pageable);
-		return entity.map(x -> new TelefoneDTO(x)); 
+		return entity.map(x -> new TelefoneDTO(x));
 	}
-	
+
 	@Transactional(readOnly = true)
 	public TelefoneDTO findById(Integer id) {
 		Optional<Telefone> entity = repository.findById(id);
 		Telefone obj = entity.orElseThrow(() -> new ResourceNotFoundException("Telefone não encontrado -> " + id));
 		return new TelefoneDTO(obj);
 	}
-	
+
 	@Transactional
 	public TelefoneDTO insert(TelefoneDTO dto) {
 		Telefone entity = new Telefone();
-		copyToEntity(entity, dto);
+		try {
+			copyToEntity(entity, dto);
+		} catch (NullPointerException e) {
+			throw new NullPointerException("Não é permitido inserir telefone sem cliente ");
+		}
+
 		return new TelefoneDTO(entity);
 	}
-	
 
 	@Transactional
 	public TelefoneDTO update(Integer id, TelefoneDTO dto) {
 		try {
 			Telefone entity = repository.getOne(id);
-			copyToEntity(entity, dto);
+
+			try {
+				copyToEntity(entity, dto);
+			} catch (NullPointerException e) {
+				throw new NullPointerException("Não é permitido inserir telefone sem cliente ");
+			}
+
 			return new TelefoneDTO(entity);
-			
+
 		} catch (EntityNotFoundException e) {
 			throw new ResourceNotFoundException("Telefone não encontrado -> " + id);
 		}
 	}
-	
+
 	public void delete(Integer id) {
 		try {
-			repository.deleteById(id);			
-		}catch(EmptyResultDataAccessException e) {
+			repository.deleteById(id);
+		} catch (EmptyResultDataAccessException e) {
 			throw new ResourceNotFoundException("Id não encontrado -> " + id);
-		}catch(DataIntegrityViolationException e) {
+		} catch (DataIntegrityViolationException e) {
 			throw new DatabaseException("Violação de integridade no banco");
 		}
 	}
-	
+
 	private void copyToEntity(Telefone entity, TelefoneDTO dto) {
 		entity.setTipo(dto.getTipo());
 		entity.setNumero(dto.getNumero());
