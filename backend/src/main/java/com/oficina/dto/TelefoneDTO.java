@@ -14,20 +14,24 @@ public class TelefoneDTO extends RepresentationModel<TelefoneDTO> implements Ser
 	private String numero;
 	private TipoEnum tipo;
 	
+	private ClienteDTO cliente;
+	
 	public TelefoneDTO() {
 		
 	}
 
-	public TelefoneDTO(Integer id, String numero, TipoEnum tipo) {
+	public TelefoneDTO(Integer id, String numero, TipoEnum tipo, ClienteDTO cliente) {
 		this.id = id;
 		this.numero = numero;
 		this.tipo = tipo;
+		this.cliente = cliente;
 	}
 	
 	public TelefoneDTO(Telefone obj) {
 		this.id = obj.getId();
 		this.numero = obj.getNumero();
 		this.tipo = obj.getTipo();
+		this.cliente = new ClienteDTO(obj.getCliente());
 	}
 
 	public Integer getId() {
@@ -52,5 +56,13 @@ public class TelefoneDTO extends RepresentationModel<TelefoneDTO> implements Ser
 
 	public void setTipo(TipoEnum tipo) {
 		this.tipo = tipo;
+	}
+
+	public ClienteDTO getCliente() {
+		return cliente;
+	}
+
+	public void setCliente(ClienteDTO cliente) {
+		this.cliente = cliente;
 	}
 }

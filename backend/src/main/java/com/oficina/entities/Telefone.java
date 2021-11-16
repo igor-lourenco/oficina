@@ -24,7 +24,7 @@ public class Telefone implements Serializable {
 	private TipoEnum tipo;
 	
 	@ManyToOne
-	@JoinColumn(name = "cliente_id")
+	@JoinColumn(name = "id_cliente")
 	private Cliente cliente;
 	
 	public Telefone() {

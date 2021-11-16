@@ -12,7 +12,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.oficina.dto.ClienteDTO;
 import com.oficina.dto.TelefoneDTO;
+import com.oficina.entities.Cliente;
 import com.oficina.entities.Telefone;
 import com.oficina.repositories.ClienteRepository;
 import com.oficina.repositories.TelefoneRepository;
@@ -20,45 +22,47 @@ import com.oficina.services.exceptions.DatabaseException;
 import com.oficina.services.exceptions.ResourceNotFoundException;
 
 @Service
-public class TelefoneService {
+public class ClienteService {
 
 	@Autowired
-	private TelefoneRepository repository;
+	private ClienteRepository repository;
 	
 	@Autowired
-	private ClienteRepository cliRepository;
+	private TelefoneRepository telRepository;
 	
 	
 	@Transactional(readOnly = true)
-	public Page<TelefoneDTO> findAll(Pageable pageable) {
-		Page<Telefone> entity = repository.findAll(pageable);
-		return entity.map(x -> new TelefoneDTO(x)); 
+	public Page<ClienteDTO> findAll(Pageable pageable) {
+		Page<Cliente> entity = repository.findAll(pageable);
+		return entity.map(x -> new ClienteDTO(x, x.getTelefones())); 
 	}
 	
 	@Transactional(readOnly = true)
-	public TelefoneDTO findById(Integer id) {
-		Optional<Telefone> entity = repository.findById(id);
-		Telefone obj = entity.orElseThrow(() -> new ResourceNotFoundException("Telefone não encontrado -> " + id));
-		return new TelefoneDTO(obj);
+	public ClienteDTO findById(Integer id) {
+		Optional<Cliente> entity = repository.findById(id);
+		Cliente obj = entity.orElseThrow(() -> new ResourceNotFoundException("Cliente não encontrado -> " + id));
+		return new ClienteDTO(obj);
 	}
 	
 	@Transactional
-	public TelefoneDTO insert(TelefoneDTO dto) {
-		Telefone entity = new Telefone();
+	public ClienteDTO insert(ClienteDTO dto) {
+		Cliente entity = new Cliente();
 		copyToEntity(entity, dto);
-		return new TelefoneDTO(entity);
+		entity = repository.save(entity);
+		return new ClienteDTO(entity);
 	}
 	
 
 	@Transactional
-	public TelefoneDTO update(Integer id, TelefoneDTO dto) {
+	public ClienteDTO update(Integer id, ClienteDTO dto) {
 		try {
-			Telefone entity = repository.getOne(id);
+			Cliente entity = repository.getOne(id);
 			copyToEntity(entity, dto);
-			return new TelefoneDTO(entity);
+			entity = repository.save(entity);
+			return new ClienteDTO(entity);
 			
 		} catch (EntityNotFoundException e) {
-			throw new ResourceNotFoundException("Telefone não encontrado -> " + id);
+			throw new ResourceNotFoundException("Cliente não encontrado -> " + id);
 		}
 	}
 	
@@ -72,10 +76,14 @@ public class TelefoneService {
 		}
 	}
 	
-	private void copyToEntity(Telefone entity, TelefoneDTO dto) {
-		entity.setTipo(dto.getTipo());
-		entity.setNumero(dto.getNumero());
-		entity.setCliente(cliRepository.getOne(dto.getCliente().getId()));
-		entity = repository.save(entity);
+	private void copyToEntity(Cliente entity, ClienteDTO dto) {
+		entity.setNome(dto.getNome());
+		entity.setSexo(dto.getSexo());
+		
+		entity.getTelefones().clear();
+		for(TelefoneDTO telDTO : dto.getTelefones()) {
+			Telefone tel = telRepository.getOne(telDTO.getId());
+			entity.getTelefones().add(tel);
+		}
 	}
 }
