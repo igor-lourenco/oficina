@@ -6,6 +6,8 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 import com.oficina.entities.enums.TipoEnum;
@@ -21,14 +23,19 @@ public class Telefone implements Serializable {
 	private String numero;
 	private TipoEnum tipo;
 	
+	@ManyToOne
+	@JoinColumn(name = "cliente_id")
+	private Cliente cliente;
+	
 	public Telefone() {
 		
 	}
 	
-	public Telefone(Integer id, String numero, TipoEnum tipo) {
+	public Telefone(Integer id, String numero, TipoEnum tipo, Cliente cliente) {
 		this.id = id;
 		this.numero = numero;
 		this.tipo = tipo;
+		this.cliente = cliente;
 	}
 
 	public Integer getId() {
@@ -53,6 +60,14 @@ public class Telefone implements Serializable {
 
 	public void setTipo(TipoEnum tipo) {
 		this.tipo = tipo;
+	}
+	
+	public Cliente getCliente() {
+		return cliente;
+	}
+
+	public void setCliente(Cliente cliente) {
+		this.cliente = cliente;
 	}
 
 	@Override
